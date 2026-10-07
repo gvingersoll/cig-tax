@@ -1,0 +1,18 @@
+{
+  "q0": 20,
+  "p0": 6,
+  "elasticity": -0.5,
+  "passthrough": 0.9,
+  "demand_slope": 0.6,
+  "supply_slope": 0.0666666666666667,
+  "quantity": 17.0,
+  "buyers_price": 7.800000000000001,
+  "sellers_price": 5.8,
+  "delta_consumer_surplus": -33.30000000000001,
+  "delta_producer_surplus": -3.700000000000003,
+  "revenue": 34.0,
+  "deadweight_loss": 3.000000000000001,
+  "surplus_check": -1.3322676295501878e-14,
+  "revenue_maximizing_tax": 6.666666666666668,
+  "theoretical_revenue_maximizing_tax": 6.666666666666667
+}
