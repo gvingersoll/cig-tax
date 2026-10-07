@@ -1,0 +1,72 @@
+Person B: pass-through and elasticity
+Write estimate.py from the contract while A works. Test it once A's pull request is merged: commit your work, then git switch main && git pull, then git switch estimates && git merge main --no-edit.
+
+Control states: states whose state tax per pack was the same in every year from 2015 to 2019.
+Pass-through: the change in California's price between A's price years, divided by $2. Then subtract the control states' average price change and recompute. Save the second one as passthrough.
+Elasticity: the log change in California's pack sales divided by the log change in its price (naive). Then subtract the control states' average log changes from both before dividing (difference-in-differences). Save the second one as elasticity, with California's before-tax q0 and p0.
+Chart: pack sales per person, 2005–2019, California against the control average, both indexed to 2016 = 100. Add a line at 2017, a title that states the finding, axis labels and a source note. Save it as figs/packs.png.
+
+In answers/B.md:
+
+B1. How many control states are there? Report both pass-through numbers and both elasticities.
+B2. Why is the difference-in-differences elasticity smaller in absolute value than the naive one?
+
+
+==================== PLAN ====================
+
+0. Setup
+- This folder IS the team repo (origin = github.com/gvingersoll/mkdir-cig-tax-cd-cig-tax). Branch: git switch -c estimates
+- gh (GitHub CLI) is not installed. Open / review / merge PRs in the GitHub web UI instead.
+
+1. Notation
+- tau = 2 (the tax change)
+- Price years t0P -> t1P and pack-sales years t0Q -> t1Q come from A's Decisions in README.md. They are different year pairs.
+- For state s:  dP_s = P_s(t1P) - P_s(t0P)    dlnQ_s = ln Q_s(t1Q) - ln Q_s(t0Q)    dlnP_s = ln P_s(t1P) - ln P_s(t0P)
+- C = set of control states, N_C = |C|. Control averages are unweighted means across states, e.g. mean_dP_C = (1/N_C) * sum over c in C of dP_c
+
+2. Control states (same state_tax in every year 2015-2019)
+- Per state, take state_tax for 2015-2019 (5 values). If max - min < 1e-9 the tax never changed, so keep it.
+- Use a tolerance, not ==, because decimals like 0.87 are stored as binary approximations (0.8700000000000001 vs 0.87). Any real tax change is at least a cent, far above 1e-9.
+- Drop California explicitly. Drop non-state rows (e.g. "United States", "Guam"). Check no missing price / packs_pc in the years used (and 2005-2019 for the chart).
+- Print N_C and the list of controls (needed for B1).
+
+    window = df[(df.year >= 2015) & (df.year <= 2019)]
+    spread = window.groupby("state")["state_tax"].agg(lambda x: x.max() - x.min())
+    controls = spread[spread < 1e-9].index.drop("California")
+
+3. Pass-through
+- passthrough_raw = dP_CA / tau
+- passthrough_DiD = (dP_CA - mean_dP_C) / tau      <- save this as `passthrough`
+- Interpretation: buyers' share of the tax = d1 / (d1 + s1) in C's model. Can exceed 1 (sales tax on top of excise, markups).
+
+4. Elasticity
+- elasticity_naive = dlnQ_CA / dlnP_CA
+- elasticity_DiD = (dlnQ_CA - mean_dlnQ_C) / (dlnP_CA - mean_dlnP_C)      <- save this as `elasticity`
+- Take each state's log change FIRST, then average (not the log of the average).
+- Each piece uses its own year pair (price years for P, pack-sales years for Q).
+- Print numerators and denominators separately (useful for B2).
+- q0 = Q_CA(t0Q), p0 = P_CA(t0P): California's before-tax values.
+
+5. Output
+- results/estimates.json with exactly the keys q0, p0, passthrough, elasticity.
+- Print the raw pass-through and naive elasticity to the console (needed for B1).
+- os.makedirs("results", exist_ok=True) and os.makedirs("figs", exist_ok=True).
+
+6. Chart (figs/packs.png)
+- Index each state: I_st = 100 * Q_st / Q_s,2016 for 2005-2019, THEN average the controls equally.
+- Lines: California vs control average. axvline at 2017 labeled "Prop 56 (Apr 2017)".
+- Title states the finding with computed numbers (e.g. "California pack sales fell X% more than in states with no tax change").
+- Axes: "Year", "Packs per capita (2016 = 100)".
+- Source note: "Source: CDC, The Tax Burden on Tobacco, 1970-2019; controls = N states with no tax change 2015-19".
+- plt.savefig("figs/packs.png", dpi=150, bbox_inches="tight")
+
+7. Sanity checks before the PR
+- Both pass-through numbers positive and near 1 (above 1 is possible). Both elasticities negative.
+- CA index near 100 in 2016, falls after 2017 relative to controls. Lines should track each other before 2016.
+- q0 in packs per person per year, p0 in dollars: compare with the California rows A printed.
+
+8. Order of work
+1) Write estimate.py with year pairs as constants at the top (placeholders).
+2) After A's PR is merged: git switch main && git pull, git switch estimates && git merge main --no-edit, fill in years, run.
+3) Check sanity list, push, open PR.
+4) Review C's PR. Write B1 and B2 yourself (no AI answers).
