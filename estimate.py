@@ -12,8 +12,8 @@ import pandas as pd
 
 # TODO: fill these in from the Decisions section of README.md (written by Person A).
 # Price and pack sales use different year pairs.
-PRICE_BEFORE, PRICE_AFTER = None, None
-PACKS_BEFORE, PACKS_AFTER = None, None
+PRICE_BEFORE, PRICE_AFTER = 2016, 2017
+PACKS_BEFORE, PACKS_AFTER = 2016, 2018
 
 TAX = 2.0  # Prop 56 increase, dollars per pack
 CA = "California"
