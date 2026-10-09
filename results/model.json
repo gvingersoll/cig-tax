@@ -1,0 +1,18 @@
+{
+  "q0": 22.0,
+  "p0": 5.607,
+  "elasticity": -0.6776739233300064,
+  "passthrough": 0.9561617647058822,
+  "demand_slope": 0.3760859427957148,
+  "supply_slope": 0.017242839715683588,
+  "quantity": 16.915195406677263,
+  "buyers_price": 7.519323529411764,
+  "sellers_price": 5.519323529411764,
+  "delta_consumer_surplus": -37.20922191392279,
+  "delta_producer_surplus": -1.7059734927544952,
+  "revenue": 33.830390813354526,
+  "deadweight_loss": 5.08480459332274,
+  "surplus_check": -1.7763568394002505e-14,
+  "revenue_maximizing_tax": 4.3266166076253825,
+  "theoretical_revenue_maximizing_tax": 4.3266166076253825
+}
